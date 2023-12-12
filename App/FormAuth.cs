@@ -14,7 +14,7 @@ namespace App
         {
             if (loginTxt.Text == "" || passwordTxt.Text == "")
             {
-                MessageBox.Show("Заполните  все поля!");
+                MessageBox.Show("Заполните все поля!");
                 return;
             }
 
