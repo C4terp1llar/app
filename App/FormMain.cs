@@ -29,11 +29,33 @@ namespace App
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            tbSale.KeyPress += new KeyPressEventHandler(tbSale_KeyPress);
+
+            tbLastSale.KeyPress += new KeyPressEventHandler(tbLastSale_KeyPress);
+
             var column = new DataGridViewTextBoxColumn();
             column.HeaderText = "Продажи";
             column.Name = "SalesColumn";
             dataGridView.Columns.Add(column);
 
+        }
+        //Валидайия последней продажи и продажи (для табл)
+        private void tbSale_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void tbLastSale_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
 
         private void btnForecast_Click(object sender, EventArgs e)
@@ -87,7 +109,7 @@ namespace App
         {
             string message = "Руководство по программе:\n\n" +
             "1. Введите исторические данные продаж в таблицу,\n" +
-            "при помощи соотыетствующих поля и кнопки\n" +
+            "при помощи соответствующих поля и кнопки\n" +
             "2. Введите последнюю продажу в соответвующее поле.\n" +
             "3. Нажмите на кнопку 'Рассчитать'.\n" +
             "4. Используйте прогноз для принятия решений.\n\n" +
@@ -137,18 +159,25 @@ namespace App
             }
             else
             {
-                MessageBox.Show("Продукт успешно внесен в БД!");
-                //нет такого продукта
-                MySqlCommand insertCommand = new MySqlCommand("INSERT INTO `products` (`productName`, `productForecast`) VALUES (@pName, @pForecast)", db.GetConnection());
-                insertCommand.Parameters.Add("@pName", MySqlDbType.VarChar).Value = tbProductName.Text;
-                insertCommand.Parameters.Add("@pForecast", MySqlDbType.VarChar).Value = tbForecast.Text;
-                insertCommand.ExecuteNonQuery();
+                if (tbForecast.Text != "")
+                {
+                    MySqlCommand insertCommand = new MySqlCommand("INSERT INTO `products` (`productName`, `productForecast`) VALUES (@pName, @pForecast)", db.GetConnection());
+                    insertCommand.Parameters.Add("@pName", MySqlDbType.VarChar).Value = tbProductName.Text;
+                    insertCommand.Parameters.Add("@pForecast", MySqlDbType.VarChar).Value = tbForecast.Text;
+                    insertCommand.ExecuteNonQuery();
 
-                dataGridView.Rows.Clear();
-                tbForecast.Text = "";
-                tbLastSale.Text = "";
-                tbSale.Text = "";
-                tbProductName.Text = "";
+                    MessageBox.Show("Продукт успешно внесен в БД!");
+
+                    dataGridView.Rows.Clear();
+                    tbForecast.Text = "";
+                    tbLastSale.Text = "";
+                    tbSale.Text = "";
+                    tbProductName.Text = "";
+                }
+                else
+                {
+                    MessageBox.Show("Сначала произведите расчет!");
+                }
             }
             db.closeConnection();
         }
