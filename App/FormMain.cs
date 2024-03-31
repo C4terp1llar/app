@@ -117,21 +117,16 @@ namespace App
             if (table.Rows.Count > 0)
             {
                 //есть такой продукт
-                string message = "Такой продукт уже есть. Хотите удалить информацию о продукте?";
+                string message = "Такой продукт уже есть. Хотите обновить информацию о продукте?";
                 DialogResult result = MessageBox.Show(message, "Предупреждение", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
                 {
-                    //заменить
+                    //обновить продукт
                     MessageBox.Show("Информация о продукте успешно обновлена!");
-                    MySqlCommand delete = new MySqlCommand("DELETE FROM `products` WHERE `productName` = @pName", db.GetConnection());
-                    delete.Parameters.Add("@pName", MySqlDbType.VarChar).Value = tbProductName.Text;
-                    delete.ExecuteNonQuery();
-
-                    MySqlCommand insert = new MySqlCommand("INSERT INTO `products` (`productName`, `productForecast`) VALUES (@pName, @pForecast)", db.GetConnection());
-                    insert.Parameters.Add("@pName", MySqlDbType.VarChar).Value = tbProductName.Text;
-                    insert.Parameters.Add("@pForecast", MySqlDbType.VarChar).Value = tbForecast.Text;
-                    insert.ExecuteNonQuery();
-
+                    MySqlCommand update = new MySqlCommand("UPDATE `products` SET `productForecast` = @pForecast WHERE `productName` = @pName", db.GetConnection());
+                    update.Parameters.Add("@pForecast", MySqlDbType.VarChar).Value = tbForecast.Text;
+                    update.Parameters.Add("@pName", MySqlDbType.VarChar).Value = tbProductName.Text;
+                    update.ExecuteNonQuery();
 
                     dataGridView.Rows.Clear();
                     tbForecast.Text = "";
